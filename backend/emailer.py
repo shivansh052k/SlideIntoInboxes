@@ -7,20 +7,23 @@ from email.mime.base import MIMEBase
 from email import encoders
 from google.oauth2.service_account import Credentials
 from fuzzywuzzy import process
+from dotenv import load_dotenv
 import os
+
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
 # ── CONFIG ────────────────────────────────────────────────────
 SCOPE       = ["https://www.googleapis.com/auth/spreadsheets",
                "https://www.googleapis.com/auth/drive"]
-CREDS_FILE  = "/Users/shivansh052k/Downloads/Emailer/Emailer_manual/mailautomation-473721-fbddf2c244a7.json"
-GMAIL_USER  = "shivanshgupta323@gmail.com"
-GMAIL_PASS  = "idsu lzto jckp ywjb"
-RESUME_PATH = "/Users/shivansh052k/Downloads/Emailer/EmailerApp/Auto_Emailer_Application/Shivansh_Gupta_Resume.pdf"
-SENT_FILE   = "/Users/shivansh052k/Downloads/Emailer/EmailerApp/Auto_Emailer_Application/sent_emails.txt"
+CREDS_FILE  = os.environ["CREDS_FILE"]
+GMAIL_USER  = os.environ["GMAIL_USER"]
+GMAIL_PASS  = os.environ["GMAIL_PASS"]
+RESUME_PATH = os.environ["RESUME_PATH"]
+SENT_FILE   = os.path.join(os.path.dirname(__file__), "..", "sent_emails.txt")
 
-SHEET_URL       = "https://docs.google.com/spreadsheets/d/1QwVDk4BFdWy_7wKKgBltnHBeMVz0pKclAGf-eSYalpQ/"
-CONTACTS_GID    = "1200200492"
-INTERNSHIPS_GID = "0"
+SHEET_URL       = os.environ["SHEET_URL"]
+CONTACTS_GID    = os.environ["CONTACTS_GID"]
+INTERNSHIPS_GID = os.environ["INTERNSHIPS_GID"]
 
 
 # ── EMAIL BODY ────────────────────────────────────────────────
