@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react"
-import { sendEmails, getSchedule, postSchedule, deleteSchedule } from "../api"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { sendEmails, postJob } from "../api"
 
-export default function Schedule() {
-  const [sending, setSending]     = useState(false)
-  const [result, setResult]       = useState(null)
-  const [scheduleInfo, setScheduleInfo] = useState(null)
-  const [runAt, setRunAt]         = useState("")
-  const [schedMsg, setSchedMsg]   = useState(null)
-
-  useEffect(() => {
-    getSchedule().then(res => setScheduleInfo(res.data))
-  }, [])
+export default function Schedule({ selected, setSelected }) {
+  const [sending, setSending] = useState(false)
+  const [result, setResult]   = useState(null)
+  const [runAt, setRunAt]     = useState("")
+  const [schedMsg, setSchedMsg] = useState(null)
+  const [scheduling, setScheduling] = useState(false)
+  const navigate = useNavigate()
 
   function handleSendNow() {
     setSending(true)
@@ -20,76 +18,116 @@ export default function Schedule() {
       .finally(() => setSending(false))
   }
 
-  function handleSchedule() {
+  function handleScheduleJob() {
     if (!runAt) return
-    postSchedule(runAt)
+    if (selected.length === 0) {
+      setSchedMsg({ error: true, text: "No recipients selected. Go to Recipients and select some first." })
+      return
+    }
+    setScheduling(true)
+    setSchedMsg(null)
+    postJob(runAt, selected)
       .then(res => {
-        if (res.data.error) {
-          setSchedMsg({ error: true, text: res.data.error })
-        } else {
-          setSchedMsg({ error: false, text: `Scheduled for ${res.data.scheduled_for}` })
-          setScheduleInfo({ scheduled: true, run_at: res.data.scheduled_for })
-        }
+        setSchedMsg({ error: false, text: `Job ${res.data.job_id} scheduled for ${res.data.scheduled_for}` })
+        setSelected([])
+        setRunAt("")
+        setTimeout(() => navigate("/jobs"), 1200)
       })
-  }
-
-  function handleCancel() {
-    deleteSchedule().then(() => {
-      setScheduleInfo({ scheduled: false })
-      setSchedMsg({ error: false, text: "Schedule cancelled." })
-    })
+      .catch(err => {
+        const msg = err.response?.data?.detail || "Failed to schedule job"
+        setSchedMsg({ error: true, text: msg })
+      })
+      .finally(() => setScheduling(false))
   }
 
   return (
     <div>
-      <h2>Run & Schedule</h2>
+      <div className="page-header">
+        <h1>Run & Schedule</h1>
+        <p>Send all emails now, or schedule a targeted job for later</p>
+      </div>
 
       {/* Send Now */}
-      <section style={section}>
-        <h3>Send Now</h3>
-        <button onClick={handleSendNow} disabled={sending}>
-          {sending ? "Sending..." : "Send Emails Now"}
+      <div className="card">
+        <h3>⚡ Send Now</h3>
+        <p style={{ color:"var(--muted)", fontSize:"13px", marginBottom:"14px" }}>
+          Sends to all pending recipients immediately.
+        </p>
+        <button className="btn btn-primary" onClick={handleSendNow} disabled={sending}>
+          {sending ? "Sending..." : "Send All Emails Now"}
         </button>
         {result && (
-          <div style={{ marginTop:"12px" }}>
-            <p>Sent: {result.sent} | Skipped: {result.skipped} | Failed: {result.failed}</p>
-            <pre style={logBox}>{result.logs.join("\n")}</pre>
-          </div>
+          <>
+            <div className="result-banner">
+              <span><div className="num green">{result.sent}</div><div className="label">Sent</div></span>
+              <span><div className="num yellow">{result.skipped}</div><div className="label">Skipped</div></span>
+              <span><div className="num red">{result.failed}</div><div className="label">Failed</div></span>
+            </div>
+            <pre className="logbox">{result.logs.join("\n")}</pre>
+          </>
         )}
-      </section>
+      </div>
 
-      {/* Schedule */}
-      <section style={section}>
-        <h3>Schedule for Later</h3>
-        <input
-          type="datetime-local"
-          value={runAt}
-          onChange={e => setRunAt(e.target.value)}
-          style={{ marginRight:"8px" }}
-        />
-        <button onClick={handleSchedule}>Schedule</button>
+      {/* Schedule Job */}
+      <div className="card">
+        <h3>🕐 Schedule a Job</h3>
+
+        {selected.length === 0 ? (
+          <div style={{ display:"flex", alignItems:"center", gap:"12px", padding:"14px 0" }}>
+            <span style={{ color:"var(--muted)", fontSize:"13px" }}>No recipients selected.</span>
+            <button className="btn btn-ghost" onClick={() => navigate("/")}>← Select Recipients</button>
+          </div>
+        ) : (
+          <>
+            <div className="selected-summary">
+              <div className="selected-summary-header">
+                <span>{selected.length} recipient{selected.length !== 1 ? "s" : ""} selected</span>
+                <button className="btn btn-ghost" style={{ padding:"2px 10px", fontSize:"12px" }} onClick={() => navigate("/")}>
+                  Change
+                </button>
+              </div>
+              <div className="table-wrap" style={{ marginTop:"10px" }}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Company</th>
+                      <th>Email</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selected.map((r, i) => (
+                      <tr key={i}>
+                        <td>{r.name}</td>
+                        <td>{r.company}</td>
+                        <td style={{ color:"#94a3b8" }}>{r.email}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div style={{ display:"flex", gap:"10px", alignItems:"center", flexWrap:"wrap", marginTop:"16px" }}>
+              <input
+                className="input"
+                type="datetime-local"
+                value={runAt}
+                onChange={e => setRunAt(e.target.value)}
+              />
+              <button className="btn btn-primary" onClick={handleScheduleJob} disabled={scheduling || !runAt}>
+                {scheduling ? "Scheduling..." : "Create Job"}
+              </button>
+            </div>
+          </>
+        )}
+
         {schedMsg && (
-          <p style={{ color: schedMsg.error ? "red" : "green", marginTop:"8px" }}>
+          <p className={schedMsg.error ? "error-msg" : "success-msg"} style={{ marginTop:"12px" }}>
             {schedMsg.text}
           </p>
         )}
-      </section>
-
-      {/* Current Schedule Status */}
-      <section style={section}>
-        <h3>Current Schedule</h3>
-        {scheduleInfo?.scheduled ? (
-          <>
-            <p>Scheduled for: <strong>{scheduleInfo.run_at}</strong></p>
-            <button onClick={handleCancel} style={{ color:"red" }}>Cancel Schedule</button>
-          </>
-        ) : (
-          <p style={{ color:"#888" }}>No schedule set.</p>
-        )}
-      </section>
+      </div>
     </div>
   )
 }
-
-const section = { border:"1px solid #ddd", borderRadius:"8px", padding:"16px", marginBottom:"16px" }
-const logBox   = { background:"#111", color:"#0f0", padding:"12px", borderRadius:"6px", fontSize:"12px", maxHeight:"200px", overflowY:"auto" }

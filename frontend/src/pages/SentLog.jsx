@@ -17,38 +17,46 @@ export default function SentLog() {
     clearSent().then(() => setSent([]))
   }
 
-  if (loading) return <p>Loading...</p>
-  if (error)   return <p style={{ color:"red" }}>{error}</p>
+  if (loading) return <p className="loading">Loading sent log...</p>
+  if (error)   return <p className="error-msg">{error}</p>
 
   return (
     <div>
-      <h2>Sent Log ({sent.length})</h2>
-      <button onClick={handleClear} style={{ color:"red", marginBottom:"12px" }}>
-        Clear Sent Log
-      </button>
+      <div className="page-header" style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+        <div>
+          <h1>Sent Log</h1>
+          <p>{sent.length} emails sent so far</p>
+        </div>
+        {sent.length > 0 && (
+          <button className="btn btn-danger" onClick={handleClear}>Clear Log</button>
+        )}
+      </div>
+
       {sent.length === 0 ? (
-        <p style={{ color:"#888" }}>No emails sent yet.</p>
+        <div className="empty">
+          <div className="empty-icon">📭</div>
+          <p>No emails sent yet.</p>
+        </div>
       ) : (
-        <table style={{ borderCollapse:"collapse", width:"100%" }}>
-          <thead>
-            <tr>
-              <th style={th}>Email</th>
-              <th style={th}>Message ID</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sent.map((s, i) => (
-              <tr key={i}>
-                <td style={td}>{s.email}</td>
-                <td style={td}>{s.message_id}</td>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Message ID</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {sent.map((s, i) => (
+                <tr key={i}>
+                  <td>{s.email}</td>
+                  <td style={{ color:"var(--muted)", fontFamily:"monospace", fontSize:"11px" }}>{s.message_id}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   )
 }
-
-const th = { border:"1px solid #ddd", padding:"8px", background:"#f5f5f5", textAlign:"left" }
-const td = { border:"1px solid #ddd", padding:"8px" }
