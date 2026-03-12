@@ -6,6 +6,7 @@ backend/.env
 # ── Personal files ────────────────────────────────────────────
 *.pdf
 sent_emails.txt
+email_template.html
 
 # ── Python ───────────────────────────────────────────────────
 __pycache__/
