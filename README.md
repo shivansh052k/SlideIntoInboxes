@@ -1,6 +1,6 @@
 <div align="center">
 
-# ✉ Emailer
+# SlideIntoInboxes
 
 **A full-stack email automation dashboard — built for job hunters, recruiters, and anyone who sends personalized bulk emails at scale.**
 
@@ -20,7 +20,7 @@
 
 ## 📸 Overview
 
-Emailer turns a tedious manual outreach process into a point-and-click workflow. It connects directly to your Google Sheet of contacts, lets you edit your email template live in the browser, and gives you full control over when and to whom emails are sent — with a live job tracker to follow along.
+SlideIntoInboxes turns a tedious manual outreach process into a point-and-click workflow. It connects directly to your Google Sheet of contacts, lets you edit your email template live in the browser, and gives you full control over when and to whom emails are sent — with a live job tracker to follow along.
 
 ---
 
