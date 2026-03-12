@@ -74,9 +74,14 @@ export default function Recipients({ selected, setSelected }) {
                   style={{ cursor:"pointer", accentColor:"var(--accent)" }}
                 />
               </th>
-              <th>Name</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Full Name</th>
+              <th>Position</th>
               <th>Company</th>
               <th>Email</th>
+              <th>Role</th>
+              <th>Link</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -95,9 +100,18 @@ export default function Recipients({ selected, setSelected }) {
                     style={{ cursor:"pointer", accentColor:"var(--accent)" }}
                   />
                 </td>
-                <td>{r.name}</td>
+                <td>{r.first_name || "—"}</td>
+                <td>{r.last_name || "—"}</td>
+                <td>{[r.first_name, r.last_name].filter(Boolean).join(" ") || "—"}</td>
+                <td style={{ color:"#94a3b8" }}>{r.position || "—"}</td>
                 <td>{r.company}</td>
-                <td style={{ color:"#94a3b8" }}>{r.email}</td>
+                <td style={{ color:"#94a3b8", fontSize:"0.85em" }}>{r.email}</td>
+                <td style={{ color:"#94a3b8" }}>{r.status || "—"}</td>
+                <td>
+                  {r.internship_link
+                    ? <a href={r.internship_link} target="_blank" rel="noreferrer" style={{ color:"var(--accent)", background:"rgba(99,102,241,0.12)", padding:"2px 8px", borderRadius:"4px", fontSize:"0.8em", fontWeight:600, textDecoration:"none", whiteSpace:"nowrap" }} onClick={e => e.stopPropagation()}>Link ↗</a>
+                    : "—"}
+                </td>
                 <td>
                   <span className={`badge ${r.sent ? "badge-sent" : "badge-pending"}`}>
                     {r.sent ? "✓ Sent" : "● Pending"}

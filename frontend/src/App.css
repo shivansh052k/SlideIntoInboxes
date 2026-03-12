@@ -63,7 +63,7 @@ body {
 .nav a:hover { color: var(--text); background: var(--surface2); }
 .nav a.active { color: var(--accent); background: rgba(99,102,241,0.12); }
 
-.main { max-width: 1400px; margin: 0 auto; padding: 40px 48px; }
+.main { max-width: 1700px; margin: 0 auto; padding: 40px 48px; }
 
 .page-header { margin-bottom: 28px; }
 .page-header h1 { font-size: 26px; font-weight: 700; }
@@ -92,7 +92,7 @@ body {
 .stat-value { font-size: 28px; font-weight: 700; }
 .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
 
-.table-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.table-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow-x: auto; }
 
 table { width: 100%; border-collapse: collapse; }
 
@@ -116,11 +116,13 @@ tbody tr:hover { background: rgba(255,255,255,0.02); }
 .badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
-  padding: 3px 10px;
+  padding: 5px 14px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
+  min-width: 90px;
 }
 
 .badge-sent    { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }

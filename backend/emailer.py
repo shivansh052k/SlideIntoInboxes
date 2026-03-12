@@ -85,13 +85,15 @@ def build_recipients():
     recipients = []
     for record in contacts:
         try:
-            company  = record["Company"].strip()
-            email    = record["Email"].strip()
-            name     = record.get("First Name", "").strip()
-            position = record.get("Position", "").strip()
-            summary  = record.get("Summary", "").strip()
-            link     = record.get("link", "").strip()
-            status   = record.get("Status", "AI/ML Engineer").strip()
+            company    = record["Company"].strip()
+            email      = record["Email"].strip()
+            first_name = record.get("First Name", "").strip()
+            last_name  = record.get("Last Name", "").strip()
+            name       = first_name or "there"
+            position   = record.get("Position", "").strip()
+            summary    = record.get("Summary", "").strip()
+            link       = record.get("link", "").strip()
+            status     = record.get("Status", "AI/ML Engineer").strip()
 
             if link:
                 internship_link = link
@@ -109,9 +111,11 @@ def build_recipients():
                     job_summary     = ""
 
             recipients.append({
+                "first_name":      first_name,
+                "last_name":       last_name,
+                "name":            name,
                 "company":         company,
                 "email":           email,
-                "name":            name or "there",
                 "position":        position or "employee",
                 "internship_link": internship_link,
                 "status":          job_status,
